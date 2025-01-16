@@ -1,0 +1,24 @@
+{
+  "name": "こんtube",
+  "version": "1.0.0",
+  "description": "A brief description of your project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Tenakskd",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "body-parser": "^2.0.2",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "youtubei.js": "^12.2.0",
+    "ytpl": "^2.3.0",
+    "ytsr": "^3.8.4"
+  },
+  "devDependencies": {}
+}
