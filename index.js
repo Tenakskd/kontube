@@ -42,7 +42,20 @@ app.post('/login', (req, res) => {
     res.render('login', { error: 'パスワードまたはユーザーネームが違います。' });
   }
 });
-
+app.get('/search', loginCheck, async (req, res) => {
+  const searchQuery = req.query.q;
+  const page = parseInt(req.query.page) || 1;
+  const resultsPerPage = 40;
+  
+  try {
+    const searchResults = await ytsr(searchQuery, { limit: resultsPerPage * page });
+    const paginatedResults = searchResults.items.slice((page - 1) * resultsPerPage, page * resultsPerPage);
+    res.render('search', { results: paginatedResults, query: searchQuery, page });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'ytsr error' });
+  }
+});
 // Logout
 app.get('/logout', (req, res) => {
   req.session.destroy();
