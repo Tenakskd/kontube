@@ -1,0 +1,15 @@
+<link href="/css/login.css" rel="stylesheet" />
+<div class="login-container">
+  <h1>ログイン</h1>
+  <form action="/login" method="post">
+    <label for="username">ユーザーネーム</label><br />
+    <input type="text" id="username" name="username" /><br />
+    <label for="password">パスワード:</label><br />
+    <input type="password" id="password" name="password" /><br />
+    <input type="submit" value="ログイン" />
+    <% if (error) { %>
+      <p style="color: red;"><%= error %></p>
+    <% } %>
+      </form>
+</body>
+</html>
