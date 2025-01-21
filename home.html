@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ホーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #dbdbd7;
+        }
+        .container {
+            position: relative;
+            top: 5vh;
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            max-height: 50vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: blue;
+        }
+        h1 {
+            font-weight: bold;
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        input[type="text"] {
+            width: 95%;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 30px;
+            border: 1px solid #cccccc;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+        .suggestions {
+            position: absolute;
+            background-color: #ffffff;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+        .suggestion {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .suggestion:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>検索</h1>
+        <input type="text" id="searchInput" placeholder="検索...">
+        <div>
+            <input type="radio" id="quickSearch" name="searchType" value="quick" checked>
+            <label for="quickSearch">簡易検索</label>
+            <input type="radio" id="advancedSearch" name="searchType" value="advanced">
+            <label for="advancedSearch">詳細検索</label>
+        </div>
+        <div class="suggestions" id="suggestions"></div>
+    </div>
+    <script>
+        document.getElementById('searchInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                const searchQuery = event.target.value;
+                const searchType = document.querySelector('input[name="searchType"]:checked').value;
+                if (searchType === 'quick') {
+                    window.location.href = '/search?q=' + encodeURIComponent(searchQuery);
+                } else if (searchType === 'advanced') {
+                    window.location.href = '/s?q=' + encodeURIComponent(searchQuery);
+                }
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@distube/ytsr@latest/dist/ytsr.min.js"></script>
+    <script src="/views/search.js"></script>
+</body>
+</html>
