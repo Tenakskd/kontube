@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+</head>
+  <body>
+    <div class="container">
+        <h1>※画像を押さないとリダイレクトされないです。</h1>
+        <% results.slice(0, 40).forEach(result => { %>
+            <% if(result.type === 'video') { %>
+                <div class="video-item">
+                    <a href="/w/<%= result.id %>">
+                        <img src="<%= result.thumbnails[0].url %>" alt="<%= result.title %>">
+                    </a>
+                    <p><%= result.title %></p>
+                </div>
+            <% } %>
+        <% }); %>
+        <div class="pagination">
+            <% if(page > 1) { %>
+                <% } %>
+            <% if(results.length > 40) { %>
+                <% } %>
+        </div>
+    </div>
+</body>
+              <style>body {
+    font-family: Arial, sans-serif;
+    background-color: #dbdcd7;
+}
+
+.container {
+    position: relative;
+    top: 0vh;
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    max-height: 80vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+input[type="text"] {
+    width: 95%;
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 30px;
+    border: 1px solid #cccccc;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+}
+
+.suggestions {
+    position: absolute;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    z-index: 1;
+}
+
+.suggestion {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.suggestion:hover {
+    background-color: #f0f0f0;
+}
+.video-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #cccccc;
+}
+
+.video-item img {
+    width: 100px;
+    height: auto;
+    border-radius: 10px;
+    margin-right: 20px;
+}
+
+.video-item p {
+    margin: 0;
+    font-size: 18px;
+}
+</style>
+</html>
