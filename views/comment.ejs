@@ -1,1 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="/styles/comment.css">
+  </head>
+  <body>
+      <% for (let comment of comments) { %>
+      <div class="comment-container">
+        <img loading="lazy" src="<%= comment.authorThumbnails[0].url %>" />
+        <div class="rVideoInfo">
+          <h4><a href="/channel/<%= comment.authorId %>">@<%= comment.author %></a></h4>
+          <pre><%= comment.content %></pre>
+        </div>
+      </div>
+      <% } %>
+<styles>
 
+  </body>
+</html>
