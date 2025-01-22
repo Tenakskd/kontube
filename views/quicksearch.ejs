@@ -26,6 +26,27 @@
                 <% } %>
         </div>
     </div>
+<script>
+        // URLのパラメータを取得
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 検索キーワードを取得
+        const searchTerm = urlParams.get('q') || 'apple'; // デフォルト値を設定
+        // 現在のページ番号を取得
+        const currentPage = parseInt(urlParams.get('page')) || 1; // デフォルト値を設定
+
+        // リンクのテキストを検索キーワードに設定
+        let linkText = `${searchTerm}を探す`;
+
+        // 次のページのURLを生成
+        let nextPageUrl = `/search?q=${encodeURIComponent(searchTerm)}&page=${currentPage + 1}`;
+        // 前のページのURLを生成（現在のページが1より大きい場合のみ生成）
+        let previousPageUrl = currentPage > 1 ? `/search?q=${encodeURIComponent(searchTerm)}&page=${currentPage - 1}` : '#';
+
+        // 次のページと前のページへのリンクをHTMLに挿入
+        document.write(`<a href="${previousPageUrl}" ${currentPage <= 1 ? 'style="display:none;"' : ''}>前のページ</a> | `);
+        document.write(`<a href="${nextPageUrl}">次のページ</a>`);
+    </script>
 </body>
               <style>body {
     font-family: Arial, sans-serif;
