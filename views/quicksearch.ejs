@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+</head>
+  <body>
+    <div class="container">
+        <h1>※画像を押さないとリダイレクトされないです。</h1>
+        <% results.slice(0, 40).forEach(result => { %>
+            <% if(result.type === 'video') { %>
+                <div class="video-item">
+                    <a href="/w/<%= result.id %>">
+                        <img src="/vi/<%= result.id %>/0.jpg" alt="<%= result.title %>">
+                    </a>
+                    <p><%= result.title %></p>
+                </div>
+            <% } %>
+        <% }); %>
+        <div class="pagination">
+            <% if(page > 1) { %>
+                <% } %>
+            <% if(results.length > 40) { %>
+                <% } %>
+        </div>
+    </div>
+<script>
+        // URLのパラメータを取得
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 検索キーワードを取得
+        const searchTerm = urlParams.get('q') || 'apple'; // デフォルト値を設定
+        // 現在のページ番号を取得
+        const currentPage = parseInt(urlParams.get('page')) || 1; // デフォルト値を設定
+
+        // リンクのテキストを検索キーワードに設定
+        let linkText = `${searchTerm}を探す`;
+
+        // 次のページのURLを生成
+        let nextPageUrl = `/search?q=${encodeURIComponent(searchTerm)}&page=${currentPage + 1}`;
+        // 前のページのURLを生成（現在のページが1より大きい場合のみ生成）
+        let previousPageUrl = currentPage > 1 ? `/search?q=${encodeURIComponent(searchTerm)}&page=${currentPage - 1}` : '#';
+
+        // 次のページと前のページへのリンクをHTMLに挿入
+        document.write(`<a href="${previousPageUrl}" ${currentPage <= 1 ? 'style="display:none;"' : ''}>前のページ</a> | `);
+        document.write(`<a href="${nextPageUrl}">次のページ</a>`);
+    </script>
+                 
+</body>
+              <style>body {
+    font-family: Arial, sans-serif;
+    background-color: #dbdcd7;
+}
+
+.container {
+    position: relative;
+    top: 0vh;
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    max-height: 80vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+input[type="text"] {
+    width: 95%;
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 30px;
+    border: 1px solid #cccccc;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+}
+
+.suggestions {
+    position: absolute;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    z-index: 1;
+}
+
+.suggestion {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.suggestion:hover {
+    background-color: #f0f0f0;
+}
+.video-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #cccccc;
+}
+
+.video-item img {
+    width: 100px;
+    height: auto;
+    border-radius: 10px;
+    margin-right: 20px;
+}
+
+.video-item p {
+    margin: 0;
+    font-size: 18px;
+}
+</style>
+</html>
