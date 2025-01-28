@@ -20,10 +20,18 @@
     "youtubei.js": "^13.0.0",
     "ytpl": "^2.3.0",
     "ytsr": "^3.8.4",
-    "ytdl-core": "^4.11.5"
+    "ytdl-core": "^4.11.5",
+    "youtubei": "^1.6.7",
+    "fs": "^0.0.2",
+    "https": "^1.0.0",
+    "@ybd-project/ytdl-core": "^6.0.8",
+    "compression": "^1.7.5",
+    "cluster": "^0.7.7",
+    "os": "^0.1.2",
+    "@distube/ytdl-core": "^4.15.8"
   },
   "devDependencies": {},
   "engines": {
-    "node": "16.x"
+    "node": ">=20"
   }
 }
