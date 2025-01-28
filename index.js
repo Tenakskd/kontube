@@ -1,15 +1,20 @@
 const express = require('express');
 const path = require('path');
-const miniget = require('miniget')
 const ytsr = require('ytsr');// youtube 検索
 const session = require('express-session');
 const youtubei = require('youtubei')
 const bodyParser = require('body-parser');
+const fs = require('fs')
+const YouTubeJS = require('youtubei.js');
+const https = require('https')
 const ytpl = require('ytpl'); // プレイリストやチャンネルの表示
 const axios = require('axios'); //便利
-const ytjs = require('youtubei.js'); // youtube非公式API
-const ytdl = require('ytdl-core'); // youtube ダウンロード
+const compression = require("compression");
 const app = express();
+const cluster = require('cluster')
+const os = require('os')
+const ytdl = require("@distube/ytdl-core");
+// 使用例
 const PORT = process.env.PORT || 3000; //ポート
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
@@ -28,6 +33,7 @@ const loginCheck = function(req, res, next) {
     res.redirect('/login');
   }
 };
+// サーバー起動前に YouTube.js を初期化
 // サムネイルプロキシする
 app.get('/vi/:id/:imageName', loginCheck,async (req, res) => {
     const { id, imageName } = req.params;
@@ -42,6 +48,7 @@ app.get('/vi/:id/:imageName', loginCheck,async (req, res) => {
         res.status(404).send('Image not found');
     }
 });
+
 // チャンネル画像
 app.get('/chimg/:id/', loginCheck,async (req, res) => {
     const { id, imageName } = req.params;
@@ -72,14 +79,15 @@ app.get('/watch/:id', loginCheck,async (req, res) => {
       channelName: videoData.channelName,
       likeCount: videoData.likeCount
     });
-  } catch (error) {
+  } 
+  catch (error) {
     console.error(error);
     res.status(500).send('Error fetching video data');
   }
 });
 app.get('/w/:id', loginCheck,async (req, res) => {
   const videoId = req.params.id;
-  const apiUrl = `http://just-frequent-network.glitch.me/api/${videoId}`;
+  const apiUrl = `https://just-frequent-network.glitch.me/api/${videoId}`;
 
   try {
     const response = await axios.get(apiUrl);
@@ -88,7 +96,7 @@ app.get('/w/:id', loginCheck,async (req, res) => {
       videoId,
       stream_url:videoData.stream_url,
       videoViews: videoData.videoViews,
-      title: videoData.title,
+      title: videoData.Title,
       videoDes: videoData.videoDes,
       channelId: videoData.channelId,
       channelName: videoData.channelName,
@@ -105,13 +113,13 @@ app.get('/cm/:id', loginCheck,async (req, res) => {
   try {
     const response = await axios.get(`https://ytcomment.glitch.me/cm/${id}`);
     const comments = response.data.comments;
-    res.render('comment', { comments }); // Render comment.ejs with the fetched comments
+    res.render('comment', { comments }); // コメント読み取り
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error fetching comments" });
   }
 });
-// ログインチェック
+// ログインしたのか
 const redirectIfLoggedIn = function(req, res, next) {
   if (req.session.userId) {
     res.redirect('/');
@@ -144,7 +152,7 @@ async function getCommentData(instances, commentId) {
   }
   throw new Error('全てのインスタンスでデータの取得に失敗しました');
 }
-// Login Processing
+// ログインページに
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
   // Here you would typically check against a database
