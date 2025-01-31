@@ -11,10 +11,12 @@ const ytpl = require('ytpl'); // プレイリストやチャンネルの表示
 const axios = require('axios'); //便利
 const compression = require("compression");
 const miniget = require('miniget');
+const m3u8Parser = require('m3u8-parser');
 const app = express();
 const cluster = require('cluster')
 const os = require('os')
 const ytdl = require("@distube/ytdl-core");
+const numClusters = os.cpus().length; 
 // 使用例
 const PORT = process.env.PORT || 3000; //ポート
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -26,6 +28,25 @@ app.use(session({
 app.set('view engine', 'ejs');
 // /viewsを参照
 app.set('views', path.join(__dirname, 'views'));
+//
+if (cluster.isMaster) {
+  for (let i = 0; i < numClusters; i++) {
+    cluster.fork();
+  }
+  cluster.on("exit", (worker, code, signal) => {
+    cluster.fork();
+  });
+} else {
+  app.use(compression());
+  app.use(express.static(__dirname + "/public"));
+  app.set("view engine", "ejs");
+  app.listen(3000, () => {
+    console.log(`Worker ${process.pid} started`);
+  });
+
+  const MINIGET_RETRY_LIMIT = 3;
+  const RETRY_DELAY_MS = 2000;
+  //live
 // チェック
 const loginCheck = function(req, res, next) {
   if (req.session.userId) {
@@ -34,6 +55,103 @@ const loginCheck = function(req, res, next) {
     res.redirect('/login');
   }
 };
+  app.get("/live/:id", loginCheck,async (req, res) => {
+    const videoId = req.params.id;
+    if (!videoId) return res.redirect("/");
+
+    try {
+      const videoInfo = await fetchVideoInfoParallel(videoId);
+      const hlsUrl = videoInfo.hlsUrl;
+      if (!hlsUrl) {
+        return res.status(500).send("No live stream URL available.");
+      }
+
+      console.log("HLS URL:", hlsUrl);
+
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
+
+      const fetchStreamWithRetry = async (url, retryCount = 0) => {
+        try {
+          const stream = miniget(url);
+          stream.pipe(res);
+
+          stream.on('error', (err) => {
+            console.error("Error while streaming HLS:", err);
+            if (retryCount < MINIGET_RETRY_LIMIT) {
+              console.log(`Retrying... (${retryCount + 1}/${MINIGET_RETRY_LIMIT})`);
+              setTimeout(() => fetchStreamWithRetry(url, retryCount + 1), RETRY_DELAY_MS);
+            } else {
+              res.status(500).send("Failed to stream after multiple retries.");
+            }
+          });
+     
+          stream.on('end', () => {
+            console.log('Stream ended.');
+          });
+        } catch (err) {
+          if (retryCount < MINIGET_RETRY_LIMIT) {
+            console.log(`Error fetching stream. Retrying... (${retryCount + 1}/${MINIGET_RETRY_LIMIT})`);
+            setTimeout(() => fetchStreamWithRetry(url, retryCount + 1), RETRY_DELAY_MS);
+          } else {
+            res.status(500).send("Failed to fetch stream after multiple retries.");
+          }
+        }
+      };
+
+      await fetchStreamWithRetry(hlsUrl);
+
+    } catch (error) {
+      console.error("エラー", error);
+      res.status(500).send(error.toString());
+    }
+  });
+  async function fetchVideoInfoParallel(videoId) {
+    const invidiousapis = [
+      "https://cal1.iv.ggtyler.dev",
+      "https://pol1.iv.ggtyler.dev",
+      "https://invidious.ducks.party",
+      "https://invidious.lunivers.trade",
+      "https://invidious.f5.si",
+      "https://nyc1.iv.ggtyler.dev",
+      "https://iv.melmac.space",
+      "https://youtube.privacyplz.org",
+      "https://invidious.schenkel.eti.br",
+      "https://lekker.gay",
+      "https://invid-api.poketube.fun",
+      "https://eu-proxy.poketube.fun"
+    ];
+    const MAX_API_WAIT_TIME = 3000;
+    const MAX_TIME = 15000;
+
+    const startTime = Date.now();
+    const instanceErrors = new Set();
+
+    for (const instance of invidiousapis) {
+      try {
+        const response = await axios.get(`${instance}/api/v1/videos/${videoId}`, { timeout: MAX_API_WAIT_TIME });
+        console.log(`成功した: ${instance}/api/v1/videos/${videoId}`);
+
+        if (response.data && response.data.formatStreams) {
+          return response.data;
+        } else {
+          console.error(`formatStreams not found: ${instance}`);
+        }
+      } catch (error) {
+        console.error(`Error: ${instance} - ${error.message}`);
+        instanceErrors.add(instance);
+      }
+
+      if (Date.now() - startTime >= MAX_TIME) {
+        throw new Error("Connection timed out");
+      }
+    }
+
+    throw new Error("No method found to fetch the video");
+  }
+}
 // サーバー起動前に YouTube.js を初期化
 // サムネイルプロキシする
 app.get('/vi/:id/:imageName', loginCheck,async (req, res) => {
