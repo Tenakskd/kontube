@@ -10,6 +10,7 @@ const https = require('https')
 const ytpl = require('ytpl'); // プレイリストやチャンネルの表示
 const axios = require('axios'); //便利
 const compression = require("compression");
+const miniget = require('miniget');
 const app = express();
 const cluster = require('cluster')
 const os = require('os')
