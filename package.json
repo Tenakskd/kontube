@@ -24,11 +24,9 @@
     "youtubei": "^1.6.7",
     "fs": "^0.0.2",
     "https": "^1.0.0",
-    "@ybd-project/ytdl-core": "^6.0.8",
     "compression": "^1.7.5",
     "cluster": "^0.7.7",
-    "os": "^0.1.2",
-    "@distube/ytdl-core": "^4.15.8"
+    "os": "^0.1.2"
   },
   "devDependencies": {},
   "engines": {
