@@ -11,7 +11,6 @@ const ytpl = require('ytpl'); // プレイリストやチャンネルの表示
 const axios = require('axios'); //便利
 const compression = require("compression");
 const miniget = require('miniget');
-const m3u8Parser = require('m3u8-parser');
 const app = express();
 const cluster = require('cluster')
 const os = require('os')
