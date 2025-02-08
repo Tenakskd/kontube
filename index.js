@@ -14,7 +14,6 @@ const miniget = require('miniget');
 const app = express();
 const cluster = require('cluster')
 const os = require('os')
-const ytdl = require("@distube/ytdl-core");
 const numClusters = os.cpus().length; 
 // 使用例
 const PORT = process.env.PORT || 3000; //ポート
